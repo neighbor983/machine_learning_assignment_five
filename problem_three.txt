@@ -1,0 +1,44 @@
+3.	Repeat (1) using two hidden layers (3 units in the first hidden layer and 2 units in the second hidden layer).  
+
+J = Loss Function MSE = || Y - T || ^ 2
+
+x1 | x2 | xor |
+---|----|-----|
+0  | 0  | 0   |
+1  | 0  | 1   |
+0  | 1  | 1   |
+1  | 1  | 0   |
+
+        l11
+X1                  l21
+        l12                     Y
+X2                  l22    
+        l13
+    
+reusing weights as much as possible    
+        
+W<1> = [
+ [ .5,  .1  ],
+ [ .2,  -.4 ],
+ [ .1,  .2  ]
+];
+
+W<2> = [
+ [ -.5, .5  -.1 ],
+ [ .2,  .4, -.3 ]
+];
+
+W<3> = [ .3, -.2];
+
+b<1> = [
+ [ -.4 ],
+ [ -.1 ],
+ [ -.2 ],
+ [ .1  ]
+];
+
+b<2> = [ .3, .4 ];
+
+b<3> = [ -.2 ];
+
+

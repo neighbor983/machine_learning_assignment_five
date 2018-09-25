@@ -1,11 +1,24 @@
 1.	Use one hidden layer with 4 hidden units, binary representation and binary sigmoid. Plot the error as a function of the number of iterations.
 
+J = Loss Function MSE = || Y - T || ^ 2
+
+
 x1 | x2 | xor |
 ---|----|-----|
 0  | 0  | 0   |
 1  | 0  | 1   |
 0  | 1  | 1   |
 1  | 1  | 0   |
+
+
+        l11
+X1
+        l12
+                 l21    Y 
+        l13
+X2        
+        l14
+
 
 X = a<0> = [ 
  [ 0 ],
@@ -110,4 +123,7 @@ a<2> = y = [
 a<2> = y = [
  .668 
 ];
+
+J = || .668 - 0 || ^ 2 = 0.44622400000000007 ~ 0.446
+
 
