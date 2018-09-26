@@ -1,7 +1,6 @@
 import random
 from math import exp
 
-from math import exp
 from plot_helper import cost_run_plot
 
 count = 0;
@@ -37,6 +36,8 @@ b1 = [
 
 b2 = [ .3 ];
 
+alpha = .01;
+
 def getZ1(weights, bias, x):
     return weights[0] * x[0] + weights[1] * x[1] + bias; 
 
@@ -58,7 +59,7 @@ def GradYwrtZ(y):
 def sigmoidDer(y):
     return  y * ( 1.0 - y );
 
-for runs in range(500):
+for runs in range(1000):
     for i in range(4):
         X = DataSet[i];
     
@@ -71,11 +72,11 @@ for runs in range(500):
         Z1_4 = getZ1(W1[3], b1[3][0], X);
 
         Z1 = [
-        [ Z1_1 ],
-        [ Z1_2 ],
-        [ Z1_3 ],
-        [ Z1_4 ]
-    ];
+            [ Z1_1 ],
+            [ Z1_2 ],
+            [ Z1_3 ],
+            [ Z1_4 ]
+        ];
     
         A1_1 = sigmoid(Z1[0][0]);
         A1_2 = sigmoid(Z1[1][0]);
@@ -107,7 +108,8 @@ for runs in range(500):
         costList.append({'Count': count, 'Cost': J});
     
         #BackProp
-        alpha = .1;
+
+        
         dJdY = GradJwrtY(A2[0], T);
         dYdZ2_1 = GradYwrtZ(A2[0]);
         dJdZ2_1 = dJdY * dYdZ2_1;
@@ -173,6 +175,44 @@ cost_run_plot(cost, iteriations, 'XOR Sigmoid', 'problem_one.svg')
 
 
 
+for i in range(4):
+    X = DataSet[i];
+    
+    T = Targets[i];
+    
+    #Forward Pass
+    Z1_1 = getZ1(W1[0], b1[0][0], X);
+    Z1_2 = getZ1(W1[1], b1[1][0], X);
+    Z1_3 = getZ1(W1[2], b1[2][0], X);
+    Z1_4 = getZ1(W1[3], b1[3][0], X);
 
+    Z1 = [
+        [ Z1_1 ],
+        [ Z1_2 ],
+        [ Z1_3 ],
+        [ Z1_4 ]
+    ];
+    
+    A1_1 = sigmoid(Z1[0][0]);
+    A1_2 = sigmoid(Z1[1][0]);
+    A1_3 = sigmoid(Z1[2][0]);
+    A1_4 = sigmoid(Z1[3][0]);
+    
+    A1 = [
+            [ A1_1 ],
+            [ A1_2 ],
+            [ A1_3 ],
+            [ A1_4 ]
+    ];
+    
+    Z2_1 =  getZ2(W2, b2, A1);
+    
+    Z2 = [ Z2_1 ];
+    
+    A2_1 = sigmoid(Z2[0]);
+    
+    A2 = [ A2_1 ];
+    
+    print(str(X)+ ': ' + str(A2_1));
 
 
