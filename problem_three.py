@@ -1,5 +1,6 @@
 from math import exp
 
+alpha = .01;
 
 DataSet = [
     [ 0, 0 ],
@@ -53,8 +54,6 @@ def MSE(y, t):
 def GradJwrtY(y, t):
     return 2 * ( y - t);
     
-
-
 
 '''
         l11
@@ -119,3 +118,66 @@ for runs in range(1):
         dJdY = GradJwrtY(A3[0][0], T);
         dYdZ3_1 = sigmoidDer(A3_1[0][0]);
         dJdZ3_1 = dJdY * dYdZ3_1;
+        
+        dJdW3_11 = dJdZ3_1 * A2[0][0];
+        dJdW3_12 = dJdZ3_1 * A2[1][0];
+        
+        dJb3_1 = dJdZ3_1;
+        
+        dJdZ2_1 = ( W3[0] * dJdZ3_1 + W3[1] * dJdZ3_1) * sigmoidDer(Z2[0][0]);
+        dJdZ2_2 = ( W3[0] * dJdZ3_1 + W3[1] * dJdZ3_1) * sigmoidDer(Z2[1][0]);
+        
+        dJdW2_11 = dJdZ2_1 * A1[0][0];
+        dJdW2_12 = dJdZ2_1 * A1[0][1]; 
+        dJdW2_13 = dJdZ2_1 * A1[0][2]; 
+        dJdW2_21 = dJdZ2_2 * A1[0][0];
+        dJdW2_22 = dJdZ2_2 * A1[0][1]; 
+        dJdW2_23 = dJdZ2_2 * A1[0][2]; 
+        
+        dJdB2_1 =  dJdZ2_1;
+        dJdB2_2 =  dJdZ2_2;
+        
+        dJdZ1_1 = ( W2[0][0] * dJdZ2_1 + W2[1][0] * dJdZ2_2 ) * sigmoidDer(Z1_1);
+        dJdZ1_2 = ( W2[0][1] * dJdZ2_1 + W2[1][1] * dJdZ2_2 ) * sigmoidDer(Z1_2);
+        dJdZ1_3 = ( W2[0][2] * dJdZ2_1 + W2[1][2] * dJdZ2_2 ) * sigmoidDer(Z1_3);
+        
+        dJdW1_11 = dJdZ1_1 * X[0];
+        dJdW1_12 = dJdZ1_1 * X[1];
+        dJdW1_21 = dJdZ1_2 * X[0];
+        dJdW1_22 = dJdZ1_2 * X[1];
+        dJdW1_31 = dJdZ1_3 * X[0];
+        dJdW1_32 = dJdZ1_3 * X[1];
+        
+        dJdB1_1 = dJdZ1_1;
+        dJdB1_2 = dJdZ1_2;
+        dJdB1_3 = dJdZ1_3;
+        
+        
+        #Update weights and bias
+        W1[0][0] = W1[0][0] - alpha * dJdW1_11;
+        W1[0][1] = W1[0][1] - alpha * dJdW1_12;
+        W1[1][0] = W1[1][0] - alpha * dJdW1_21;
+        W1[1][1] = W1[1][1] - alpha * dJdW1_22;
+        W1[2][0] = W1[2][0] - alpha * dJdW1_31;
+        W1[2][1] = W1[2][1] - alpha * dJdW1_32;
+
+        b1[0][0] = b1[0][0] - alpha * dJdB1_1;
+        b1[1][0] = b1[1][0] - alpha * dJdB1_2;
+        b1[2][0] = b1[2][0] - alpha * dJdB1_3;
+        
+        
+        W2[0][0] = W2[0][0] - alpha * dJdW2_11;
+        W2[0][1] = W2[0][1] - alpha * dJdW2_12;
+        W2[0][2] = W2[0][2] - alpha * dJdW2_13;
+        W2[1][0] = W2[1][0] - alpha * dJdW2_21;
+        W2[1][1] = W2[1][1] - alpha * dJdW2_22;
+        W2[1][2] = W2[1][2] - alpha * dJdW2_23;
+        
+        b2[0] = b2[0] - alpha * dJdB2_1;
+        b2[1] = b2[1] - alpha * dJdB2_2;
+        
+
+W3 = [ .3, -.2];
+
+b3 = [ -.2 ];
+         
