@@ -1,101 +1,178 @@
 import random
 from math import exp
 
+from math import exp
+from plot_helper import cost_run_plot
+
+count = 0;
+
+costList = [];
+
 DataSet = [
-    [ 0.0, 0.0 ],
-    [ 1.0, 0.0 ],
-    [ 0.0, 1.0 ],
-    [ 1.0, 1.0 ]
+[ 0, 0 ],
+[ 1,  0 ],
+[ 0, 1 ],
+[ 1,  1 ]     
 ];
 
-Targets = [ 0, 1, 1, 0 ];
-    
-X = DataSet[0];
-
-T = Targets[0];
+Targets = [0, 1, 1, 0];
 
 W1 = [
- [ 0.5,  0.1  ],
- [ 0.2,  -0.4 ],
- [ 0.1,  0.2  ],
- [ -0.5, 0.5  ]
+ [ .5,  .1  ],
+ [ .2,  -.4 ],
+ [ .1,  .2  ],
+ [ -.5, .5  ]
 ];
 
-W2 = [ 0.2,  0.4, -0.3, 0.5 ];
+W2 = [
+    .2,  .4, -.3, .5
+];
 
 b1 = [
- -0.4,
- -0.1,
- -0.2,
- 0.1
+ [ -.4 ],
+ [ -.1 ],
+ [ -.2 ],
+ [ .1  ]
 ];
 
-b2 = [
- .3
-];
+b2 = [ .3 ];
+
+def getZ1(weights, bias, x):
+    return weights[0] * x[0] + weights[1] * x[1] + bias; 
+
+def getZ2(weights, bias, x):
+    return weights[0] * x[0][0] + weights[1] * x[1][0] + weights[2] * x[2][0] + weights[3] * x[3][0] + bias[0];
 
 def sigmoid(z):
-    return 1.0 / (1.0 + exp(-z));
-
-def getZ1(weights, bias, A):
-    Z1 = [
-        [ weights[0][0] * A[0] + weights[0][1] * A[1] + bias[0]],
-        [ weights[1][0] * A[0] + weights[1][1] * A[1] + bias[1]],
-        [ weights[2][0] * A[0] + weights[2][1] * A[1] + bias[2]],
-        [ weights[3][0] * A[0] + weights[3][1] * A[1] + bias[3]],
-    ];
-    return Z1;
-
-def getA1(Z1):
-    A1 = [
-       sigmoid(Z1[0][0]),
-       sigmoid(Z1[1][0]),
-       sigmoid(Z1[2][0]),
-       sigmoid(Z1[3][0])
-    ];
-    return A1;
+    return 1.0  / ( 1.0 + exp(-z) );
     
-def getZ2(weights, bias, A):
-    Z2 = [
-        weights[0] * A[0] + weights[1] * A[1] + weights[2] * A[2] + weights[3] * A[3]+ bias[0]
-    ];
-    return Z2;
-
-def getA2(Z2):
-    return 1.0 / (1.0 + exp(-Z2[0]));
-
 def MSE(A2, T):
     return (A2 - T) ** 2;
 
-def gradientJwrtY(Y, T):
-    return 2*(Y - T);
+def GradJwrtY(y, t):
+    return 2 * (y - t);
+    
+def GradYwrtZ(y):
+    return sigmoidDer(y);
+    
+def sigmoidDer(y):
+    return  y * ( 1.0 - y );
 
-def gradientYwrtZ2(Y):
-    return Y * ( 1 - Y );
+for runs in range(500):
+    for i in range(4):
+        X = DataSet[i];
+    
+        T = Targets[i];
+    
+        #Forward Pass
+        Z1_1 = getZ1(W1[0], b1[0][0], X);
+        Z1_2 = getZ1(W1[1], b1[1][0], X);
+        Z1_3 = getZ1(W1[2], b1[2][0], X);
+        Z1_4 = getZ1(W1[3], b1[3][0], X);
+
+        Z1 = [
+        [ Z1_1 ],
+        [ Z1_2 ],
+        [ Z1_3 ],
+        [ Z1_4 ]
+    ];
+    
+        A1_1 = sigmoid(Z1[0][0]);
+        A1_2 = sigmoid(Z1[1][0]);
+        A1_3 = sigmoid(Z1[2][0]);
+        A1_4 = sigmoid(Z1[3][0]);
+    
+        A1 = [
+            [ A1_1 ],
+            [ A1_2 ],
+            [ A1_3 ],
+            [ A1_4 ]
+        ];
+    
+        Z2_1 =  getZ2(W2, b2, A1);
+    
+        Z2 = [ Z2_1 ];
+    
+        A2_1 = sigmoid(Z2[0]);
+    
+        A2 = [ A2_1 ];
+    
+        J = MSE(A2[0], T);
+        
+        #BatchJ += J;
+    
+        count += 1;
+    
+    
+        costList.append({'Count': count, 'Cost': J});
+    
+        #BackProp
+        alpha = .1;
+        dJdY = GradJwrtY(A2[0], T);
+        dYdZ2_1 = GradYwrtZ(A2[0]);
+        dJdZ2_1 = dJdY * dYdZ2_1;
+    
+        dJdW2_11 = dJdZ2_1 * A1[0][0];
+        dJdW2_12 = dJdZ2_1 * A1[1][0];
+        dJdW2_13 = dJdZ2_1 * A1[2][0];
+        dJdW2_14 = dJdZ2_1 * A1[3][0];
+    
+        dJdB2 = dJdZ2_1;
+    
+        #Level one
+        dJdZ1_1 = (W2[0] * dJdZ2_1) * sigmoidDer(Z2[0]);
+        dJdZ1_2 = (W2[1] * dJdZ2_1) * sigmoidDer(Z2[0]);
+        dJdZ1_3 = (W2[2] * dJdZ2_1) * sigmoidDer(Z2[0]);
+        dJdZ1_4 = (W2[3] * dJdZ2_1) * sigmoidDer(Z2[0]);
+
+        dJdW1_11 = dJdZ1_1 * X[0];
+        dJdW1_21 = dJdZ1_2 * X[0];
+        dJdW1_31 = dJdZ1_3 * X[0];
+        dJdW1_41 = dJdZ1_4 * X[0];
+        dJdW1_12 = dJdZ1_1 * X[1];
+        dJdW1_22 = dJdZ1_2 * X[1];
+        dJdW1_32 = dJdZ1_3 * X[1];
+        dJdW1_42 = dJdZ1_4 * X[1];
+
+        dJdB1_1 = dJdZ1_1;
+        dJdB1_2 = dJdZ1_2;
+        dJdB1_3 = dJdZ1_3;
+        dJdB1_4 = dJdZ1_4;
+    
+        #Update weights and bias
+        W2[0] = W2[0] - alpha * dJdW2_11;
+        W2[1] = W2[1] - alpha * dJdW2_12;
+        W2[2] = W2[2] - alpha * dJdW2_13;
+        W2[3] = W2[3] - alpha * dJdW2_14;
+    
+        b2[0] = b2[0] - alpha * dJdB2;
+
+        W1[0][0] = W1[0][0] - alpha * dJdW1_11;
+        W1[0][1] = W1[0][1] - alpha * dJdW1_12;
+        W1[1][0] = W1[1][0] - alpha * dJdW1_21;
+        W1[1][1] = W1[1][1] - alpha * dJdW1_22;
+        W1[2][0] = W1[2][0] - alpha * dJdW1_31;
+        W1[2][1] = W1[2][1] - alpha * dJdW1_32;
+        W1[3][0] = W1[3][0] - alpha * dJdW1_41;
+        W1[3][1] = W1[3][1] - alpha * dJdW1_42;
+
+        b1[0][0] = b1[0][0] - alpha * dJdB1_1;
+        b1[1][0] = b1[1][0] - alpha * dJdB1_2;
+        b1[2][0] = b1[2][0] - alpha * dJdB1_3;
+        b1[3][0] = b1[3][0] - alpha * dJdB1_4;
+
+cost = [];
+iteriations = [];
+
+for item in costList:
+    cost.append(item['Cost']);
+    iteriations.append(item['Count']);
+
+cost_run_plot(cost, iteriations, 'XOR Sigmoid', 'problem_one.svg')
 
 
-#Forward Propagation
-Z1 = getZ1(W1, b1, X);
-
-print(Z1);
-
-A1 = getA1(Z1);
-Z2 = getZ2(W2, b2, A1);
-print(Z2);
 
 
-A2 = getA2(Z2);
-J = MSE(A2, T);
-#Back Propagation
-dJdY = gradientJwrtY(A2, T);
-dYdZ2 = gradientYwrtZ2(A2);
-dJdZ2 = dJdY * dYdZ2;
-dJdW211 = dJdZ2 * A1[0];
-dJdW212 = dJdZ2 * A1[1];
-dJdW213 = dJdZ2 * A1[2];
-dJdW214 = dJdZ2 * A1[3];
-dJdB2 = dJdZ2;
-dJdZ11 = (W2[0] * dJdZ2 ) * sigmoid(Z1[0][0]) * ( 1.0 - sigmoid(Z1[0][0]) ); 
-dJdZ12 = (W2[1] * dJdZ2 ) * sigmoid(Z1[0][1]) * ( 1.0 - sigmoid(Z1[0][1]) ); 
-dJdZ13 = (W2[2] * dJdZ2 ) * sigmoid(Z1[0][2]) * ( 1.0 - sigmoid(Z1[0][2]) ); 
-dJdZ14 = (W2[3] * dJdZ2 ) * sigmoid(Z1[0][3]) * ( 1.0 - sigmoid(Z1[0][3]) ); 
+
+
+
