@@ -68,7 +68,7 @@ X2                  l22
         l13
 '''
 
-for runs in range(20):
+for runs in range(750):
     for i in range(4):
         X = DataSet[i];
     
@@ -202,3 +202,54 @@ for item in costList:
 cost_run_plot(cost, iteriations, 'XOR Sigmoid Two Hidden Layers', 'problem_three.svg')
 
 
+for i in range(4):
+    X = DataSet[i];
+    
+    T = Targets[i];
+    
+    #forward Pass
+    Z1_1 = X[0] * W1[0][0] + X[1] * W1[0][1] + b1[0][0];
+    Z1_2 = X[0] * W1[1][0] + X[1] * W1[1][1] + b1[1][0];
+    Z1_3 = X[0] * W1[2][0] + X[1] * W1[2][1] + b1[2][0];
+    
+    Z1 = [
+        [ Z1_1 ],
+        [ Z1_2 ],
+        [ Z1_3 ]
+    ];
+        
+    A1_1 = sigmoid(Z1_1);
+    A1_2 = sigmoid(Z1_2);
+    A1_3 = sigmoid(Z1_3);
+    
+    A1 = [
+        [ A1_1 ],
+        [ A1_2 ],
+        [ A1_3 ]
+    ];
+    
+    Z2_1 = A1_1 * W2[0][0] + A1_2 * W2[0][1] + A1_3 * W2[0][2] + b2[0];
+    Z2_2 = A1_1 * W2[1][0] + A1_2 * W2[1][1] + A1_3 * W2[1][2] + b2[1];
+    
+    Z2 = [
+        [ Z2_1 ],
+        [ Z2_2 ]
+    ];
+
+    A2_1 = sigmoid(Z2_1);
+    A2_2 = sigmoid(Z2_2);
+      
+    A2 = [
+        [ A2_1 ],
+        [ A2_2 ]
+    ];
+        
+    Z3_1 = A2_1 * W3[0] + A2_2 * W3[1] + b3[0];
+    
+    Z3 = [ Z3_1 ];
+    
+    A3_1 = sigmoid(Z3_1);
+    
+    A3 = [ [A3_1] ];
+    
+    print(str(X)+ ': ' + str(A3_1));
