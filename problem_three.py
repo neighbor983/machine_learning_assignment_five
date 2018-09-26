@@ -1,4 +1,5 @@
 from math import exp
+from plot_helper import cost_run_plot
 
 alpha = .01;
 
@@ -10,6 +11,10 @@ DataSet = [
 ];
 
 Targets = [0, 1, 1, 0];
+
+costList = [];
+count = 0;
+
 
 '''
         l11
@@ -26,7 +31,7 @@ W1 = [
 ];
 
 W2 = [
- [ -.5, .5  -.1 ],
+ [ -.5, .5,  -.1 ],
  [ .2,  .4, -.3 ]
 ];
 
@@ -63,16 +68,16 @@ X2                  l22
         l13
 '''
 
-for runs in range(1):
+for runs in range(20):
     for i in range(4):
         X = DataSet[i];
     
         T = Targets[i];
         
         #forward Pass
-        Z1_1 = X[0] * W1[0][0] + X[1] * W1[0][1] + b1[0];
-        Z1_2 = X[0] * W1[1][0] + X[1] * W1[1][1] + b1[1];
-        Z1_3 = X[0] * W1[2][0] + X[1] * W1[2][1] + b1[2];
+        Z1_1 = X[0] * W1[0][0] + X[1] * W1[0][1] + b1[0][0];
+        Z1_2 = X[0] * W1[1][0] + X[1] * W1[1][1] + b1[1][0];
+        Z1_3 = X[0] * W1[2][0] + X[1] * W1[2][1] + b1[2][0];
         
         Z1 = [
             [ Z1_1 ],
@@ -114,25 +119,31 @@ for runs in range(1):
         
         A3 = [ [A3_1] ];
         
+        J = MSE(A3_1, T);
+        
+        count += 1;
+    
+        costList.append({'Count': count, 'Cost': J});
+        
         #Back Propagation
         dJdY = GradJwrtY(A3[0][0], T);
-        dYdZ3_1 = sigmoidDer(A3_1[0][0]);
+        dYdZ3_1 = sigmoidDer(A3_1);
         dJdZ3_1 = dJdY * dYdZ3_1;
         
         dJdW3_11 = dJdZ3_1 * A2[0][0];
         dJdW3_12 = dJdZ3_1 * A2[1][0];
         
-        dJb3_1 = dJdZ3_1;
+        dJdB3_1 = dJdZ3_1;
         
         dJdZ2_1 = ( W3[0] * dJdZ3_1 + W3[1] * dJdZ3_1) * sigmoidDer(Z2[0][0]);
         dJdZ2_2 = ( W3[0] * dJdZ3_1 + W3[1] * dJdZ3_1) * sigmoidDer(Z2[1][0]);
         
         dJdW2_11 = dJdZ2_1 * A1[0][0];
-        dJdW2_12 = dJdZ2_1 * A1[0][1]; 
-        dJdW2_13 = dJdZ2_1 * A1[0][2]; 
+        dJdW2_12 = dJdZ2_1 * A1[1][0]; 
+        dJdW2_13 = dJdZ2_1 * A1[2][0]; 
         dJdW2_21 = dJdZ2_2 * A1[0][0];
-        dJdW2_22 = dJdZ2_2 * A1[0][1]; 
-        dJdW2_23 = dJdZ2_2 * A1[0][2]; 
+        dJdW2_22 = dJdZ2_2 * A1[1][0]; 
+        dJdW2_23 = dJdZ2_2 * A1[2][0]; 
         
         dJdB2_1 =  dJdZ2_1;
         dJdB2_2 =  dJdZ2_2;
@@ -176,8 +187,18 @@ for runs in range(1):
         b2[0] = b2[0] - alpha * dJdB2_1;
         b2[1] = b2[1] - alpha * dJdB2_2;
         
+        W3[0] = W3[0] - alpha * dJdW3_11;
+        W3[1] = W3[1] - alpha * dJdW3_12;
+        
+        b3[0] = b3[0] - alpha * dJdB3_1;
+        
+cost = [];
+iteriations = [];
 
-W3 = [ .3, -.2];
+for item in costList:
+    cost.append(item['Cost']);
+    iteriations.append(item['Count']);
 
-b3 = [ -.2 ];
-         
+cost_run_plot(cost, iteriations, 'XOR Sigmoid Two Hidden Layers', 'problem_three.svg')
+
+
