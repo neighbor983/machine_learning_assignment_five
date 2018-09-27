@@ -1,13 +1,13 @@
 from math import exp
 from plot_helper import cost_run_plot
 
-alpha = .01;
+alpha = .3;
 
 DataSet = [
-    [ 0, 0 ],
-    [ 1,  0 ],
+    [ 1, 1 ],  
+    [ 1, 0 ],
     [ 0, 1 ],
-    [ 1,  1 ]     
+    [ 0, 0 ]
 ];
 
 Targets = [0, 1, 1, 0];
@@ -57,8 +57,10 @@ def MSE(y, t):
     return ( y - t ) ** 2;
     
 def GradJwrtY(y, t):
-    return 2 * ( y - t);
+    return 2.0 * ( y - t);
     
+def activationDer(z):
+    return sigmoid(z) * ( 1.0 - sigmoid(z) );
 
 '''
         l11
@@ -68,16 +70,16 @@ X2                  l22
         l13
 '''
 
-for runs in range(750):
+for runs in range(30000):
     for i in range(4):
-        X = DataSet[i];
+        A0 = DataSet[i];
     
         T = Targets[i];
         
         #forward Pass
-        Z1_1 = X[0] * W1[0][0] + X[1] * W1[0][1] + b1[0][0];
-        Z1_2 = X[0] * W1[1][0] + X[1] * W1[1][1] + b1[1][0];
-        Z1_3 = X[0] * W1[2][0] + X[1] * W1[2][1] + b1[2][0];
+        Z1_1 = A0[0] * W1[0][0] + A0[1] * W1[0][1] + b1[0][0];
+        Z1_2 = A0[0] * W1[1][0] + A0[1] * W1[1][1] + b1[1][0];
+        Z1_3 = A0[0] * W1[2][0] + A0[1] * W1[2][1] + b1[2][0];
         
         Z1 = [
             [ Z1_1 ],
@@ -126,43 +128,42 @@ for runs in range(750):
         costList.append({'Count': count, 'Cost': J});
         
         #Back Propagation
-        dJdY = GradJwrtY(A3[0][0], T);
+        dJdY = GradJwrtY(A3_1, T);
         dYdZ3_1 = sigmoidDer(A3_1);
         dJdZ3_1 = dJdY * dYdZ3_1;
         
-        dJdW3_11 = dJdZ3_1 * A2[0][0];
-        dJdW3_12 = dJdZ3_1 * A2[1][0];
+        dJdW3_11 = dJdZ3_1 * A2_1;
+        dJdW3_12 = dJdZ3_1 * A2_2;
         
         dJdB3_1 = dJdZ3_1;
         
-        dJdZ2_1 = ( W3[0] * dJdZ3_1 + W3[1] * dJdZ3_1) * sigmoidDer(Z2[0][0]);
-        dJdZ2_2 = ( W3[0] * dJdZ3_1 + W3[1] * dJdZ3_1) * sigmoidDer(Z2[1][0]);
+        dJdZ2_1 = ( W3[0] * dJdZ3_1 ) * activationDer(Z2_1);
+        dJdZ2_2 = ( W3[1] * dJdZ3_1 ) * activationDer(Z2_2);
         
-        dJdW2_11 = dJdZ2_1 * A1[0][0];
-        dJdW2_12 = dJdZ2_1 * A1[1][0]; 
-        dJdW2_13 = dJdZ2_1 * A1[2][0]; 
-        dJdW2_21 = dJdZ2_2 * A1[0][0];
-        dJdW2_22 = dJdZ2_2 * A1[1][0]; 
-        dJdW2_23 = dJdZ2_2 * A1[2][0]; 
-        
+        dJdW2_11 = dJdZ2_1 * A1_1;
+        dJdW2_12 = dJdZ2_1 * A1_2; 
+        dJdW2_13 = dJdZ2_1 * A1_3; 
+        dJdW2_21 = dJdZ2_2 * A1_1;
+        dJdW2_22 = dJdZ2_2 * A1_2; 
+        dJdW2_23 = dJdZ2_2 * A1_3; 
+    
         dJdB2_1 =  dJdZ2_1;
         dJdB2_2 =  dJdZ2_2;
         
-        dJdZ1_1 = ( W2[0][0] * dJdZ2_1 + W2[1][0] * dJdZ2_2 ) * sigmoidDer(Z1_1);
-        dJdZ1_2 = ( W2[0][1] * dJdZ2_1 + W2[1][1] * dJdZ2_2 ) * sigmoidDer(Z1_2);
-        dJdZ1_3 = ( W2[0][2] * dJdZ2_1 + W2[1][2] * dJdZ2_2 ) * sigmoidDer(Z1_3);
+        dJdZ1_1 = ( W2[0][0] * dJdZ2_1 + W2[1][0] * dJdZ2_2 ) * activationDer(Z1_1);
+        dJdZ1_2 = ( W2[0][1] * dJdZ2_1 + W2[1][1] * dJdZ2_2 ) * activationDer(Z1_2);
+        dJdZ1_3 = ( W2[0][2] * dJdZ2_1 + W2[1][2] * dJdZ2_2 ) * activationDer(Z1_3);
         
-        dJdW1_11 = dJdZ1_1 * X[0];
-        dJdW1_12 = dJdZ1_1 * X[1];
-        dJdW1_21 = dJdZ1_2 * X[0];
-        dJdW1_22 = dJdZ1_2 * X[1];
-        dJdW1_31 = dJdZ1_3 * X[0];
-        dJdW1_32 = dJdZ1_3 * X[1];
+        dJdW1_11 = dJdZ1_1 * A0[0];
+        dJdW1_12 = dJdZ1_1 * A0[1];
+        dJdW1_21 = dJdZ1_2 * A0[0];
+        dJdW1_22 = dJdZ1_2 * A0[1];
+        dJdW1_31 = dJdZ1_3 * A0[0];
+        dJdW1_32 = dJdZ1_3 * A0[1];
         
         dJdB1_1 = dJdZ1_1;
         dJdB1_2 = dJdZ1_2;
         dJdB1_3 = dJdZ1_3;
-        
         
         #Update weights and bias
         W1[0][0] = W1[0][0] - alpha * dJdW1_11;
@@ -175,7 +176,6 @@ for runs in range(750):
         b1[0][0] = b1[0][0] - alpha * dJdB1_1;
         b1[1][0] = b1[1][0] - alpha * dJdB1_2;
         b1[2][0] = b1[2][0] - alpha * dJdB1_3;
-        
         
         W2[0][0] = W2[0][0] - alpha * dJdW2_11;
         W2[0][1] = W2[0][1] - alpha * dJdW2_12;
@@ -203,14 +203,14 @@ cost_run_plot(cost, iteriations, 'XOR Sigmoid Two Hidden Layers', 'problem_three
 
 
 for i in range(4):
-    X = DataSet[i];
+    A0 = DataSet[i];
     
     T = Targets[i];
     
     #forward Pass
-    Z1_1 = X[0] * W1[0][0] + X[1] * W1[0][1] + b1[0][0];
-    Z1_2 = X[0] * W1[1][0] + X[1] * W1[1][1] + b1[1][0];
-    Z1_3 = X[0] * W1[2][0] + X[1] * W1[2][1] + b1[2][0];
+    Z1_1 = A0[0] * W1[0][0] + A0[1] * W1[0][1] + b1[0][0];
+    Z1_2 = A0[0] * W1[1][0] + A0[1] * W1[1][1] + b1[1][0];
+    Z1_3 = A0[0] * W1[2][0] + A0[1] * W1[2][1] + b1[2][0];
     
     Z1 = [
         [ Z1_1 ],
@@ -252,4 +252,4 @@ for i in range(4):
     
     A3 = [ [A3_1] ];
     
-    print(str(X)+ ': ' + str(A3_1));
+    print(str(A0)+ ': ' + str(A3_1));
