@@ -1,7 +1,7 @@
 from math import exp
 from plot_helper import cost_run_plot
 
-alpha = .3;
+alpha = .1;
 
 DataSet = [
     [ 1, 1 ],  
@@ -70,7 +70,7 @@ X2                  l22
         l13
 '''
 
-for runs in range(30000):
+for runs in range(45000):
     for i in range(4):
         A0 = DataSet[i];
     
