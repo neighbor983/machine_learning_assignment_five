@@ -1,6 +1,16 @@
 2.	Repeat (1) using bipolar sigmoid and bipolar representation for exclusive-OR function.
 
+Reusing the same weights from problem one.
+
 J = Loss Function MSE = || Y - T || ^ 2
+
+        l11
+X1
+        l12
+                 l21    Y 
+        l13
+X2        
+        l14
 
 x1 | x2 | xor |
 ---|----|-----|
@@ -13,7 +23,8 @@ X = a<0> = [ -1, -1];
 
 T = [ -1 ];
 
-Reusing the same weights from problem one
+bipolar sigmoid = (1 - exp(-x)) / (1 + exp(-x))
+
 
 W<1> = [
  [ .5,  .1  ],
@@ -33,17 +44,6 @@ b<1> = [
  [ .1  ]
 ];
 
-b<2> = [ .3 ];
-
-Z<1> = [
- W<1> * a<0> + b<1> 
+b<2> = [
+ .3
 ];
-
-Z<1> = [
- .5 * (-1) +  .1 * (-1) + (-.4) = -1 
- .2 * (-1) + -.4 * (-1) + (-.1) = .1
- .1 * (-1) +  .2 * (-1) + (-.2) = -.5
--.5 * (-1) +  .5 * (-1) + .1    = .1 
-];
-
-= (1 - exp(-x)) / (1 + exp(-x))

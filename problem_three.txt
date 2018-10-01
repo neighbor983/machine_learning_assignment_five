@@ -2,6 +2,8 @@
 
 J = Loss Function MSE = || Y - T || ^ 2
 
+Sigmoid = ( 1 ) / (1 + exp(-x))
+
 x1 | x2 | xor |
 ---|----|-----|
 0  | 0  | 0   |
@@ -14,7 +16,7 @@ X1                  l21
         l12                     Y
 X2                  l22    
         l13
-    
+
 reusing weights as much as possible    
         
 W<1> = [
@@ -40,5 +42,3 @@ b<1> = [
 b<2> = [ .3, .4 ];
 
 b<3> = [ -.2 ];
-
-
